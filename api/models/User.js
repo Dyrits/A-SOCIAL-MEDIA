@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const crypto = require("crypto");
 
 const salt = () => crypto.randomBytes(16).toString("hex");
-const password = (password, salt) => crypto.pbkdf2Sync(password, salt, 10000, 512, "sha512").toString("hex");
+const encrypt = (password, salt) => crypto.pbkdf2Sync(password, salt, 10000, 512, "sha512").toString("hex");
 
 const schema = new mongoose.Schema({
   firstName: {
@@ -25,11 +25,13 @@ const schema = new mongoose.Schema({
   salt: String
 });
 
-schema.methods.setPassword = password => {
+schema.methods.setPassword = function(password) {
   this.salt = salt();
-  this.password = password(password, this.salt);
+  this.password = encrypt(password, this.salt);
 }
 
-schema.methods.validatePassword = password => this.password === password(password, this.salt);
+schema.methods.validatePassword = function(password) {
+  return this.password === encrypt(password, this.salt);
+};
 
 mongoose.model("User", schema);

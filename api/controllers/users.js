@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
+const passport = require("passport");
 
 const User = mongoose.model("User");
 
 module.exports = {
-  register: ({ body }, response) => {
+  register: async ({ body }, response) => {
     const { firstName, lastName, email, password, confirmation } = body;
     if (!firstName || !lastName || !email || !password || !confirmation) {
       return response.status(400).json({ error: "All fields are required." });
@@ -17,25 +18,33 @@ module.exports = {
       email
     });
     user.setPassword(password);
-    user.save((error, $user) => {
-      if (error) {
+    user.save()
+      .then($user => {
+        // Remove password and salt from user object:
+        $user.password = undefined;
+        $user.salt = undefined;
+        return response.status(200).json({ user: $user });
+      })
+      .catch(error => {
         return response.status(500).json({ error });
-      }
-      return response.status(200).json({ user: $user });
-    });
+      });
+
   },
   login: (request, response) => {
     const { email, password } = request.body;
     if (!email || !password) {
       return response.status(400).json({ error: "All fields are required." });
     }
-    passport.authenticate("local", (error, user, info) => {
+    passport.authenticate("local", {},  (error, user, info) => {
       if (error) {
         return response.status(500).json({ error });
       }
       if (!user) {
         return response.status(400).json({ error: info.message });
       }
+      // Remove password and salt from user object:
+      user.password = undefined;
+      user.salt = undefined;
       return response.status(200).json({ user });
     })(request, response);
   }

@@ -20,7 +20,7 @@ export class PageRegisterComponent {
     lastName: String(),
     email: String(),
     password: String(),
-    passwordConfirmation: String()
+    confirmation: String()
   }
 
   public handleSubmit() {
@@ -28,7 +28,14 @@ export class PageRegisterComponent {
   }
 
   private register() {
-    console.info("Registering...");
+    const request = {
+      type: "POST",
+      location: "users/register",
+      body: this.credentials
+    }
+    this.api.makeRequest(request).then((response: any) => {
+      console.info("Registration response: ", response);
+    });
   }
 
   private validate() {
@@ -39,7 +46,7 @@ export class PageRegisterComponent {
     const expression = new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
     expression.test(this.credentials.email) || this.errors.push("Please enter a valid email address.");
     // Check if the password matches the password confirmation.
-    this.credentials.password !== this.credentials.passwordConfirmation && this.errors.push("The passwords do not match.");
+    this.credentials.password !== this.credentials.confirmation && this.errors.push("The passwords do not match.");
     return !this.errors.length;
   }
 

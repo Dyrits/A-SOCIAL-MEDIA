@@ -7,8 +7,7 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 export class ApiService {
   private baseUrl = "http://localhost:3000";
 
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) {}
 
   private successHandler(response: any): any {
     return response;
@@ -20,7 +19,7 @@ export class ApiService {
   }
 
   public makeRequest(request: { type: string, location: string, body: {} }): any {
-    const type = request.type.toLowerCase();
+    const type = request.type.toUpperCase();
     if (!type) {
       console.warn("No type specified in the request objects.");
       return;

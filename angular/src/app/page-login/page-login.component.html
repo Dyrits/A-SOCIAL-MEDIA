@@ -10,12 +10,12 @@
 
         <h2 class="font-weight-300 mt-4 text-center">Login</h2>
 
-        <form class="login-form w-100 w-md-50 mx-auto user mt-5">
+        <form class="login-form w-100 w-md-50 mx-auto user mt-5" (submit)="handleSubmit()">
           <div class="form-group">
-            <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email Address" name="email">
+            <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email Address" name="email" [(ngModel)]="credentials.email">
           </div>
           <div class="form-group">
-            <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" name="password">
+            <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" name="password" [(ngModel)]="credentials.password">
           </div>
           <input type="submit" class="btn btn-primary btn-user btn-block" value="Login">
         </form>
@@ -24,6 +24,10 @@
           <a routerLink="/register" class="text-white link">Register</a>
         </h4>
       </div>
+
+      <section *ngFor="let error of this.errors" class="alert alert-primary text-alert text-center">
+        {{ error }}
+      </section>
 
     </div>
   </div>

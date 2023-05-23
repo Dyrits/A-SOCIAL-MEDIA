@@ -5,10 +5,7 @@ const mongoose = require("mongoose");
 const User = mongoose.model("User");
 
 const strategy = new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
-  User.findOne({ email }, (error, user) => {
-    if (error) {
-      return done(error);
-    }
+  User.findOne({ email }).then( user => {
     if (!user) {
       return done(null, false, { message: "Incorrect email." });
     }
@@ -16,6 +13,8 @@ const strategy = new LocalStrategy({ usernameField: "email" }, (email, password,
       return done(null, false, { message: "Incorrect password." });
     }
     return done(null, user);
+  }).catch(error => {
+    return done(error);
   });
 });
 
