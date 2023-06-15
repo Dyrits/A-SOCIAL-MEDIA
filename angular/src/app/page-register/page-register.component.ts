@@ -35,6 +35,10 @@ export class PageRegisterComponent {
     }
     this.api.makeRequest(request).then((response: any) => {
       console.info("Registration response: ", response);
+      if (response.error) {
+        const { error: { code } } = response.error;
+        this.errors.push(code === 11000 ? "This email address is already registered." : "An error occurred. Please try again later.");
+      }
     });
   }
 
