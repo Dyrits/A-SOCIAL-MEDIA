@@ -21,9 +21,10 @@ module.exports = {
     user.save()
       .then($user => {
         // Remove password and salt from user object:
-        $user.password = undefined;
-        $user.salt = undefined;
-        return response.status(200).json({ user: $user });
+        $user.password = null;
+        $user.salt = null;
+        const token = $user.generateJWT();
+        return response.status(200).json({ user: $user, token });
       })
       .catch(error => {
         console.error(error);
@@ -44,9 +45,10 @@ module.exports = {
         return response.status(400).json({ error: info.message });
       }
       // Remove password and salt from user object:
-      user.password = undefined;
-      user.salt = undefined;
-      return response.status(200).json({ user });
+      user.password = null;
+      user.salt = null;
+      const token = user.generateJWT();
+      return response.status(200).json({ user, token });
     })(request, response);
   }
 };
