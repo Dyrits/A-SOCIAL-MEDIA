@@ -1,15 +1,17 @@
 import { Injectable } from "@angular/core";
 import { Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot } from "@angular/router";
 
+import { LocalStorageService } from "./local-storage.service";
+
 @Injectable({
   providedIn: "root"
 })
 export class AuthService {
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private storage: LocalStorageService) {
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  async canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     let activate = this.isLoggedIn();
     let redirect = "/feed";
     if (route.data["loggedIn"]) {
@@ -19,12 +21,17 @@ export class AuthService {
     if (!activate) {
       return true;
     } else {
-      this.router.navigate([redirect]);
+      await this.router.navigate([redirect]);
       return false;
     }
   }
 
   private isLoggedIn() {
-    return false;
+    return !!this.storage.getToken();
+  }
+
+  public async logout() {
+    this.storage.removeToken();
+    await this.router.navigate(["/login"]);
   }
 }

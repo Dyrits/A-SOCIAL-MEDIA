@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { Router } from "@angular/router";
 
 import { ApiService } from '../api.service';
+import { LocalStorageService } from "../local-storage.service";
 
 @Component({
   selector: 'app-page-register',
@@ -9,7 +11,7 @@ import { ApiService } from '../api.service';
 })
 export class PageRegisterComponent {
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private storage: LocalStorageService, private router: Router) {}
 
   ngOnInit() {}
 
@@ -33,8 +35,11 @@ export class PageRegisterComponent {
       location: "users/register",
       body: this.credentials
     }
-    this.api.makeRequest(request).then((response: any) => {
-      console.info("Registration response: ", response);
+    this.api.makeRequest(request).then(async (response: any) => {
+      if (response.token) {
+        this.storage.setToken(response.token);
+        await this.router.navigate(["/"]);
+      }
       if (response.error) {
         const { error: { code } } = response.error;
         this.errors.push(code === 11000 ? "This email address is already registered." : "An error occurred. Please try again later.");

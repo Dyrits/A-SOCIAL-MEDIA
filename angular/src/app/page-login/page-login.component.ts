@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
+import { Router } from "@angular/router";
 
 import { ApiService } from '../api.service';
+import { LocalStorageService } from "../local-storage.service";
 
 @Component({
   selector: 'app-page-login',
@@ -16,7 +18,7 @@ export class PageLoginComponent {
     password: String(),
   }
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private storage: LocalStorageService, private router: Router) {}
 
   public handleSubmit() {
     return this.validate() && this.login()
@@ -28,8 +30,11 @@ export class PageLoginComponent {
       location: "users/login",
       body: this.credentials
     }
-    this.api.makeRequest(request).then((response: any) => {
-      console.info("Login response: ", response);
+    this.api.makeRequest(request).then(async (response: any) => {
+      if (response.token) {
+        this.storage.setToken(response.token);
+        await this.router.navigate(["/"]);
+      }
     });
   }
 
