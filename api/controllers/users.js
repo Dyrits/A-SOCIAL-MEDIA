@@ -50,5 +50,8 @@ module.exports = {
       const token = user.generateJWT();
       return response.status(200).json({ user, token });
     })(request, response);
+  },
+  temporary: (request, response) => {
+    return response.status(200).json({ message: "Temporary route." });
   }
 };
