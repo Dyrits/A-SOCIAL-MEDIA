@@ -24,7 +24,56 @@ const schema = new mongoose.Schema({
     trim: true
   },
   password: String,
-  salt: String
+  salt: String,
+  friends: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: []
+  },
+  requests: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: []
+  },
+  besties: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: []
+  },
+  ennemies: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User",
+    default: []
+  },
+  posts: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Post",
+    default: []
+  },
+  messages: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "Message",
+    default: []
+  },
+  notifications: {
+    type: {
+      messages: {
+        type: Number,
+        default: 0
+      },
+      requests: {
+        type: Number,
+        default: 0
+      },
+      miscellaneous: {
+        type: Number,
+        default: 0
+      }
+    }
+  },
+  avatar: {
+    type: String
+  },
 });
 
 schema.methods.setPassword = function (password) {
@@ -43,4 +92,4 @@ schema.methods.generateJWT = function () {
   }, process.env.JWT_SECRET);
 };
 
-mongoose.model("User", schema);
+module.exports = mongoose.model("User", schema);
