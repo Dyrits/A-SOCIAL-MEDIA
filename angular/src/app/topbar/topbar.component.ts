@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 import { AuthService } from "../auth.service";
 
@@ -9,5 +10,14 @@ import { AuthService } from "../auth.service";
 })
 export class TopbarComponent {
 
-  constructor(public auth: AuthService) {}
+  constructor(protected auth: AuthService, private router: Router) {}
+
+  ngOnInit() {}
+
+  protected query: string = String();
+
+  public search() {
+    console.log(`Searching for ${this.query}...`);
+    this.router.navigate(['/search-results'], { queryParams: { query: this.query } });
+  }
 }

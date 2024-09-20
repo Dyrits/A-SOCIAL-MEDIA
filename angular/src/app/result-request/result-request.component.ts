@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from "@angular/core";
 
 @Component({
   selector: 'app-result-request',
@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./result-request.component.scss']
 })
 export class ResultRequestComponent {
-
+  @Input() result: any;
 }
