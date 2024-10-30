@@ -1,63 +1,81 @@
-import { Component } from '@angular/core';
-import { Router } from "@angular/router";
-
+import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../api.service';
-import { LocalStorageService } from "../local-storage.service";
+import { LocalStorageService } from '../local-storage.service';
+import { Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-page-register',
-  templateUrl: './page-register.component.html',
-  styleUrls: ['./page-register.component.scss']
+    selector: 'app-page-register',
+    templateUrl: './page-register.component.html',
+    styleUrls: ['./page-register.component.css']
 })
-export class PageRegisterComponent {
 
-  constructor(private api: ApiService, private storage: LocalStorageService, private router: Router) {}
-
-  ngOnInit() {}
-
-  public errors: string[] = [];
-
-  public credentials = {
-    firstName: String(),
-    lastName: String(),
-    email: String(),
-    password: String(),
-    confirmation: String()
-  }
-
-  public handleSubmit() {
-    return this.validate() && this.register()
-  }
-
-  private register() {
-    const request = {
-      type: "POST",
-      location: "users/register",
-      body: this.credentials
+export class PageRegisterComponent implements OnInit {
+    
+    constructor(
+        private api: ApiService,
+        private storage: LocalStorageService,
+        private router: Router,
+        private title: Title,
+    ) { }
+    
+    ngOnInit() {
+        this.title.setTitle("A Social Media - Register");
     }
-    this.api.makeRequest(request).then(async (response: any) => {
-      if (response.token) {
-        this.storage.setToken(response.token);
-        this.storage.setName(`${response.user.firstName} ${response.user.lastName}`);
-        await this.router.navigate(["/"]);
-      }
-      if (response.error) {
-        const { error: { code } } = response.error;
-        this.errors.push(code === 11000 ? "This email address is already registered." : "An error occurred. Please try again later.");
-      }
-    });
-  }
-
-  private validate() {
-    this.errors = [];
-    // Check if all the fields are filled out.
-    Object.values(this.credentials).every(credential => credential.trim()) || this.errors.push("Please fill out all the fields.");
-    // Check if the email is valid with RegEx.
-    const expression = new RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-    expression.test(this.credentials.email) || this.errors.push("Please enter a valid email address.");
-    // Check if the password matches the password confirmation.
-    this.credentials.password !== this.credentials.confirmation && this.errors.push("The passwords do not match.");
-    return !this.errors.length;
-  }
-
+    
+    public formError = "";
+        
+    public credentials = {
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
+        password_confirm: ''
+    };
+    
+    public formSubmit() {
+        this.formError = "";
+        
+        if(
+            !this.credentials.first_name ||
+            !this.credentials.last_name ||
+            !this.credentials.email ||
+            !this.credentials.password ||
+            !this.credentials.password_confirm
+        ) {
+            return this.formError = "All fields are required.";
+        }
+        
+        
+        // var re = new RegExp(/^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/);
+        // if (!re.test(this.credentials.email)) {
+        //     return this.formError = "Please enter a valid email address.";
+        // }
+        
+        if(this.credentials.password !== this.credentials.password_confirm) {
+            return this.formError = "Passwords don't match."
+        }
+        
+        this.register();
+    }
+    
+    
+    private register() {
+        let requestObject = {
+            method: "POST",
+            location: "users/register",
+            body: this.credentials
+        }
+        
+        this.api.makeRequest(requestObject).then((val) => {
+            if(val.token) {
+                this.storage.setToken(val.token);
+                this.router.navigate(['/']);
+                return;
+            }
+            if(val.message) { this.formError = val.message }
+        });
+    }
+    
+    
 }
