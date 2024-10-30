@@ -32,6 +32,7 @@ export class AuthService {
 
   public async logout() {
     this.storage.removeToken();
+    this.storage.removeName();
     await this.router.navigate(["/login"]);
   }
 }

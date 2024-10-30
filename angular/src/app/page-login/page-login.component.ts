@@ -33,6 +33,7 @@ export class PageLoginComponent {
     this.api.makeRequest(request).then(async (response: any) => {
       if (response.token) {
         this.storage.setToken(response.token);
+        this.storage.setName(`${response.user.firstName} ${response.user.lastName}`);
         await this.router.navigate(["/"]);
       }
     });

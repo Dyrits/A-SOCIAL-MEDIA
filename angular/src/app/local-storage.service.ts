@@ -22,6 +22,18 @@ export class LocalStorageService {
     return localStorage ? localStorage.removeItem(key) : alert("Browser is unable to store and retrieve data locally.");
   }
 
+  public setName(value: string) {
+    this.set("name", value);
+  }
+
+  public getName() {
+    return this.get("name");
+  }
+
+  public removeName() {
+    this.remove("name");
+  }
+
   public setToken(value: string) {
     this.set(this.token, value);
   }
